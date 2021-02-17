@@ -246,15 +246,7 @@ def integrate_mass_fuel(df_sol):
     df_sol["integral_mass_C3H8_over_x"] = np.cumsum(df_sol["m_C3H8"])
     return df_sol
 
-
-if __name__ == "__main__":
-    # Sol
-    logger.info("Load mesh")
-    dir_mesh = '/scratch/cfd/qdouasbin/LEFEX/MASRI/BLINDTEST/MESH_20M/MASRI_3D_20M_2ZONES_HIP_20_07'
-    dir_sol = '/scratch/cfd/qdouasbin/LEFEX/MASRI/MESH_ADAPTATION_STUDY/Colin2/20M_correction_uprim/RUN_dyn_corrected_V2/SOLUT'
-    sol_mesh_file = os.path.join(
-        dir_mesh, "MASRI_3D_20M_2ZONES_HIP_20_07.mesh.h5")
-    sol_file = os.path.join(dir_sol, "MASRI_3D_00000009.h5")
+def treatment(sol_mesh_file, sol_file):
     df_sol = get_dataframe_solut(sol_mesh_file, sol_file)
 
     # # Clipping
@@ -386,11 +378,24 @@ if __name__ == "__main__":
         "x_tip": x_flame_tip,
         "m_fuel_ch": df_sol.m_fuel_ch,
         "m_fuel_ch_before_xtip": df_sol.m_fuel_ch_before_xtip,
+        "time": df_sol.time,
     }
 
     logger.info("Dump pickle")
+
     # Export values of interest
     with open(os.path.split(sol_file)[-1].replace(".h5", ".p"), 'wb') as f1:
         pickle.dump(data_out, f1)
 
     logger.info("Done.")
+
+if __name__ == "__main__":
+    # Sol
+    logger.info("Load mesh")
+    dir_mesh = '/scratch/cfd/qdouasbin/LEFEX/MASRI/BLINDTEST/MESH_20M/MASRI_3D_20M_2ZONES_HIP_20_07'
+    dir_sol = '/scratch/cfd/qdouasbin/LEFEX/MASRI/MESH_ADAPTATION_STUDY/Colin2/20M_correction_uprim/RUN_dyn_corrected_V2/SOLUT'
+    sol_mesh_file = os.path.join(
+        dir_mesh, "MASRI_3D_20M_2ZONES_HIP_20_07.mesh.h5")
+    sol_file = os.path.join(dir_sol, "MASRI_3D_00000009.h5")
+
+    treatment(sol_mesh_file, sol_file)
